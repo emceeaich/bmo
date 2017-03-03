@@ -23,8 +23,6 @@ use Bugzilla::Config qw(:admin);
 use Bugzilla::User::Setting;
 use Bugzilla::Status;
 
-BEGIN { Bugzilla->extensions }
-
 my $dbh = Bugzilla->dbh;
 
 # set Bugzilla usage mode to USAGE_MODE_CMDLINE
@@ -153,6 +151,13 @@ my $group = new Bugzilla::Group({ name => 'editbugs' });
 $group->set_user_regexp('');
 $group->update();
 
+my %group_auto_cc = (
+    'partner-confidential' => {
+        'Marketing' => ['jbalaco@mozilla.com'],
+        '_default'  => ['mbest@mozilla.com'],
+    },
+);
+
 my @users = (
     {
         login    => 'nobody@mozilla.org',
@@ -167,7 +172,7 @@ my @users = (
         }
     } map {
         map { @$_ } values %$_
-    } values %Bugzilla::Extension::BMO::Data::group_auto_cc,
+    } values %group_auto_cc,
 );
 
 print "creating user accounts...\n";
